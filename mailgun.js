@@ -8,11 +8,11 @@ module.exports = {
   // ({from, to, subject, text})
   sendMail(msg) {
     if (!API_KEY) {
-      return Promise.reject('mailgun#sendMail API key not found');
+      return Promise.reject(new Error('mailgun#sendMail API key not found'));
     }
 
     if (!msg.from || !msg.to || !msg.subject || !msg.text) {
-      return Promise.reject('mailgun#sendMail message invalid format');
+      return Promise.reject(new Error('mailgun#sendMail message invalid format'));
     }
 
     return new Promise((resolve) => {
@@ -25,9 +25,7 @@ module.exports = {
           user: 'api',
           pass: API_KEY,
         },
-      }, (err, res, body) => {
-        resolve();
-      });
+      }, resolve);
     });
   },
 };
