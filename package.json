@@ -4,6 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "preinstall": "rm-local-modules -v",
+    "postinstall": "node setup.js",
     "test": "jest",
     "lint": "eslint"
   },
@@ -21,10 +23,12 @@
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
-    "jest": "^23.5.0"
+    "jest": "^23.5.0",
+    "rm-local-modules": "0.0.2"
   },
   "dependencies": {
-    "request": "^2.88.0",
-    "sqlite3": "^4.0.2"
+    "dbase": "file:lib/dbase",
+    "imgur": "file:lib/imgur",
+    "mailgun": "file:lib/mailgun"
   }
 }
