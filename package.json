@@ -27,6 +27,7 @@
     "rm-local-modules": "0.0.2"
   },
   "dependencies": {
+    "email-validator": "^2.0.4",
     "dbase": "file:lib/dbase",
     "imgur": "file:lib/imgur",
     "mailgun": "file:lib/mailgun"
