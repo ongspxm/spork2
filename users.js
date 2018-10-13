@@ -19,15 +19,15 @@ function getUser(email) {
 function createUser(usr) {
   // ({email, name}) => usr
   if (!isEmail(usr.email)) {
-    return Promise.reject('Malformed Email');
+    return Promise.reject(new Error('Malformed Email'));
   }
 
   return getUser(usr.email)
     .then((res) => {
-      if (res) { throw 'User Exist'; }
+      if (res) { throw new Error('User Exist'); }
     })
     .then(() => dbase.insert(
-      DB_NAME, { email: usr.email, name: usr.name }
+      DB_NAME, { email: usr.email, name: usr.name },
     ));
 }
 
@@ -35,15 +35,15 @@ function changeName(usr) {
   // ({email, name})
   return getUser(usr.email)
     .then((res) => {
-      if (!res) { throw 'User Not Exist'; }
+      if (!res) { throw new Error('User Not Exist'); }
     })
     .then(dbase.update(
       DB_NAME, { name: usr.name },
-      'email=?', [usr.email]
+      'email=?', [usr.email],
     ));
 }
 
 module.exports = {
   createUser,
-  changeName
+  changeName,
 };
