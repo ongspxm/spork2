@@ -16,9 +16,12 @@ Each room is tied to a generated serial `r_id`, and associated to one account, d
 
 Booking details are provided by `users`. Each room also have a `vacancy`. This serves as a rough gauge for the users to see how many person the place is able to accomodate.
 
+Frontend list of rooms returns from `from` onwards (refering to `r_id` of room, exclusive of). If `from` not defined, first few rooms will be returned. Filtering currently done on frontend side. possible extension to do filtering and search on backend.
+
 Future work can be done to include a booking system to tag the period a room is booked.
 
 ### Endpoints
+- `GET /rooms?from=`
 - `POST /rooms/new?title=`
 - `POST /rooms/update?rid=&title=`
 - `POST /rooms/newimg?rid=`
