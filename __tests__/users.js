@@ -22,9 +22,7 @@ test('Creating new user works', done => {
     name: 'No problem'
   })
     .then(() => dbase.select(DBNAME))
-    .then(res => {
-      expect(res.length).toBe(1);
-    })
+    .then(res => expect(res.length).toBe(1))
     .then(done);
 });
 
@@ -59,9 +57,7 @@ test('Changing user name works', done => {
     name: firstName
   })
     .then(() => dbase.select('users'))
-    .then(res => {
-      expect(res[0].name).toBe(firstName);
-    })
+    .then(res => expect(res[0].name).toBe(firstName))
     .then(() => users.changeName({
       email,
       name: secondName
