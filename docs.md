@@ -18,11 +18,18 @@ Booking details are provided by `users`. Each room also have a `vacancy`. This s
 
 Frontend list of rooms returns from `from` onwards (refering to `r_id` of room, exclusive of). If `from` not defined, first few rooms will be returned. Filtering currently done on frontend side. possible extension to do filtering and search on backend.
 
+Frontend list can be used to return the rooms of a particular user as well. This is used on user display page.
+
 Future work can be done to include a booking system to tag the period a room is booked.
 
+### Images
+Each room can be tied to multiple images and these can be added and deleted using the different endpoints.
+
+There is the idea of cover image too, (`rms.cover`), This is the main display pic for display on the frontend. The rest of the images will be arranged randomly.
+
 ### Endpoints
-- `GET /rooms?from=`
-- `POST /rooms/new?title=`
-- `POST /rooms/update?rid=&title=`
+- `GET /rooms?from=&email=`
+- `POST /rooms/new?title=&text=&vacancy=`
+- `POST /rooms/update?rid=&title=&text=&vacancy=&cover=`
 - `POST /rooms/newimg?rid=`
 - `POST /rooms/delimg?rid=&imgid=`
