@@ -1,5 +1,5 @@
 const dbase = require('dbase');
-const users = require('users');
+const users = require('./users.js');
 
 const DB = 'rms';
 const DB_IMG = 'rmimgs';
@@ -15,8 +15,10 @@ function newRoom(rm){
       if (!res){ return err('cannot find user'); }
     })
     .then(() => dbase.insert(DB, {
-      email, title, text, vacancy
-    });
+      u_email: email,
+      title, text, vacancy
+    }))
+    .then(res => console.log(res));
 }
 
 function updateRoom(rm){
@@ -52,3 +54,8 @@ function newImg(obj){
 function delImg(obj){
   // ({r_id, imgurId}) => True
 }
+
+module.exports = {
+  newRoom,
+  updateRoom
+};
