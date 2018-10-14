@@ -44,6 +44,7 @@ function changeName(usr) {
 }
 
 module.exports = {
+  getUser,
   createUser,
   changeName,
 };
