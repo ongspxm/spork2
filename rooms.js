@@ -1,23 +1,25 @@
 const dbase = require('dbase');
+const users = require('users');
 
 const DB = 'rms';
 const DB_IMG = 'rmimgs';
 const err = str => Promise.reject(new Error('roomError - ' + str));
-
-function getRooms(from=0){
-}
 
 function newRoom(rm){
   // ({email, title, text, vacancy}) => {rm obj}
   const { email, title, text, vacancy } = rm;
   if (!email) { return err('missing email'); }
 
-  return dbase.insert(DB, {
-    email, title, text, vacancy
-  });
+  return users.getUser(email)
+    .then(res => {
+      if (!res){ return err('cannot find user'); }
+    })
+    .then(() => dbase.insert(DB, {
+      email, title, text, vacancy
+    });
 }
 
-function updateRoom(obj){
+function updateRoom(rm){
   // ({email, rid, title, text, vacancy, cover}) => {rm obj}
   const {email, rid, title, text, vacancy, cover} = rm;
   if (!email) { return err('missing email'); }
@@ -38,6 +40,9 @@ function updateRoom(obj){
     .then(() => dbase.update(DB, {
       title, text, vacancy, cover
     }, 'r_id=?', [rid]))
+}
+
+function getRooms(from=0){
 }
 
 function newImg(obj){
