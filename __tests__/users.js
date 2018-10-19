@@ -30,19 +30,14 @@ test('Repeated acct', (done) => {
 
   return users.createUser({ email })
     .then(users.createUser({ email }))
-    .then(
-      () => Promise.reject('failed'),
-      () => done(),
-    );
+    .catch(() => done());
 });
 
 test('Wrong email', done => users.createUser({
   email: 'wrongDomain@c',
   name: 'Wrong email',
-}).then(
-  () => Promise.reject('failed'),
-  () => done(),
-));
+})
+  .catch(() => done()));
 
 test('Changing user name works', (done) => {
   const email = 'ChangeUserName@example.com';
@@ -71,7 +66,4 @@ test('Change name on non-exist', done => users.changeName({
   email: 'nobody@example.com',
   name: 'asdf',
 })
-  .then(
-    () => Promise.reject('failed'),
-    () => done(),
-  ));
+  .catch(() => done()));

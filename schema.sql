@@ -8,8 +8,8 @@ create table if not exists rms(
 );
 
 create table if not exists rmimgs(
-    imgur text unique,
-    link text,
+    id text unique,
+    url text,
     r_id integer,
     dhash text
 );

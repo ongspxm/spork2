@@ -5,7 +5,7 @@ const users = require('../users.js');
 const rooms = require('../rooms.js');
 
 const DBNAME = 'rms';
-const DBIMGS = 'rmsimg';
+const DBIMGS = 'rmimgs';
 
 const dbname = () => Math.random().toString().substring(2, 9);
 
@@ -46,7 +46,7 @@ test('Update room works', (done) => {
 
   return users.createUser({ email })
     .then(() => rooms.newRoom({ email, title: title1 }))
-    .then(res => rooms.updateRoom({
+    .then(() => rooms.updateRoom({
       email, title: title2, rid: 1,
     }))
     .then(() => dbase.select(DBNAME))
@@ -61,5 +61,83 @@ test('Update room cannot find room', (done) => {
     .then(() => rooms.updateRoom({
       email, rid: 100,
     }))
+    .catch(() => done());
+});
+
+test('Add new img works', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  let gImg;
+  return users.createUser({ email })
+    .then(() => rooms.newRoom({ email }))
+    .then(() => rooms.addImg({ email, rid: 1, data }))
+    .then((img) => { gImg = img; })
+    .then(() => dbase.select(DBIMGS))
+    .then((res) => {
+      expect(res.length).toBe(1);
+      expect(res[0]).toEqual(gImg);
+      done();
+    });
+});
+
+test('Add new img cannot find room', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return users.createUser({ email })
+    .then(() => rooms.addImg({ email, rid: 1, data }))
+    .catch(() => done());
+});
+
+test('Add new img cannot find user', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return rooms.addImg({ email, rid: 1, data })
+    .catch(() => done());
+});
+
+test('Del img works', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return users.createUser({ email })
+    .then(() => rooms.newRoom({ email }))
+    .then(() => rooms.addImg({ email, rid: 1, data }))
+    .then(img => rooms.delImg({ email, rid: 1, imgid: img.id }))
+    .then(() => dbase.select(DBIMGS))
+    .then((res) => {
+      console.log(res);
+      expect(res.length).toBe(0);
+    })
+    .then(() => done());
+});
+
+test('Del img, cannot find image', (done) => {
+  // nothing done, will just attempt empty delete
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return users.createUser({ email })
+    .then(() => rooms.newRoom({ email }))
+    .then(() => rooms.delImg({ email, rid: 1, imgur: data }))
+    .then(() => done());
+});
+
+test('Del img, cannot find room', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return users.createUser({ email })
+    .then(() => rooms.delImg({ email, rid: 1, imgur: data }))
+    .catch(() => done());
+});
+
+test('Del img, cannot find user', (done) => {
+  const email = 'test@example.com';
+  const data = 'https://picsum.photos/200/300';
+
+  return rooms.delImg({ email, rid: 1, imgur: data })
     .catch(() => done());
 });
