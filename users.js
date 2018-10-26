@@ -4,6 +4,10 @@ const crypto = require('crypto');
 const isEmail = require('email-validator').validate;
 
 const DB_NAME = 'users';
+const DB_ACCTS = 'tmpAcct';
+
+const EMAIL = `hello@${process.env.MG_HOST}`;
+const err = str => Promise.reject(Error('user err: ' + str));
 
 function genCode(len) {
   return crypto.createHash('sha256')

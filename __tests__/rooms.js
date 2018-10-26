@@ -8,6 +8,7 @@ const DBNAME = 'rms';
 const DBIMGS = 'rmimgs';
 
 const dbname = () => Math.random().toString().substring(2, 9);
+process.env.DEBUG = true;
 
 beforeEach((done) => {
   process.env.DATABASE = `.data/${dbname()}.db`;
@@ -108,7 +109,6 @@ test('Del img works', (done) => {
     .then(img => rooms.delImg({ email, rid: 1, imgid: img.id }))
     .then(() => dbase.select(DBIMGS))
     .then((res) => {
-      console.log(res);
       expect(res.length).toBe(0);
     })
     .then(() => done());

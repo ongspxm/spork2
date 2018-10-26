@@ -6,6 +6,7 @@ const users = require('../users.js');
 const DBNAME = 'users';
 
 const dbname = () => Math.random().toString().substring(2, 9);
+process.env.DEBUG = true;
 
 beforeEach((done) => {
   process.env.DATABASE = `.data/${dbname()}.db`;
