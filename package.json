@@ -7,6 +7,7 @@
     "preinstall": "rm-local-modules -v",
     "postinstall": "node setup.js",
     "test": "jest",
+    "coverall": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "lint": "eslint"
   },
   "repository": {
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/ongspxm/spork2#readme",
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
@@ -27,8 +29,9 @@
     "rm-local-modules": "0.0.2"
   },
   "dependencies": {
-    "email-validator": "^2.0.4",
     "dbase": "file:lib/dbase",
+    "email-validator": "^2.0.4",
+    "express": "^4.16.4",
     "imgur": "file:lib/imgur",
     "mailgun": "file:lib/mailgun"
   }

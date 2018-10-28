@@ -20,3 +20,19 @@ create table if not exists users(
     name text,
     code text
 );
+
+create table if not exists tmpAcct(
+    email text unique,
+    code text
+);
+
+create table if not exists emails(
+    id text unique,
+    text text
+);
+insert into emails(id, text) values (
+    'newacct_subject', 'New account signup @ Sanghaville'
+);
+insert into emails(id, text) values (
+    'newacct_content', '<html><body><p>Thank you for signing up for Sanghaville.</p><p>Your sign up verification code is as follows:<br />{{ code }}</p></body></html>'
+);

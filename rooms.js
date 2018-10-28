@@ -69,12 +69,14 @@ function addImg(obj) {
   let gImg;
   return getRoom(email, rid)
     .then(() => imgur.upload(data))
-    .then(res => {gImg = {
-      r_id: rid,
-      id: res.id,
-      url: res.url,
-      dhash: res.dhash,
-    };})
+    .then((res) => {
+      gImg = {
+        r_id: rid,
+        id: res.id,
+        url: res.url,
+        dhash: res.dhash,
+      };
+    })
     .then(() => dbase.insert(DB_IMG, gImg))
     .then(() => gImg);
 }

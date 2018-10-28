@@ -4,6 +4,7 @@ const dbase = require('dbase');
 const users = require('../users.js');
 
 const DBNAME = 'users';
+const DBACCT = 'tmpAcct';
 
 const dbname = () => Math.random().toString().substring(2, 9);
 process.env.DEBUG = true;
@@ -18,6 +19,28 @@ afterEach((done) => {
   fs.unlink(process.env.DATABASE, done);
 });
 
+test('genAcct works', (done) => {
+  const email = 'text@example.com';
+
+  // test duplicated attempt as well
+  users.genAcct(email)
+    .then(code => dbase.select(DBACCT)
+      .then((res) => {
+        expect(res.length).toBe(1);
+        expect(res[0].code.substring(0, 3)).toBe(code);
+      }))
+    .then(() => users.genAcct(email))
+    .then(code => dbase.select(DBACCT)
+      .then((res) => {
+        expect(res.length).toBe(1);
+        expect(res[0].code.substring(0, 3)).toBe(code);
+      }))
+    .then(done);
+});
+
+test('genAcct non-email', done => users.genAcct('asdfasdf')
+  .catch(() => done()));
+
 test('Creating new user works', done => users.createUser({
   email: 'createNewUser@example.com',
   name: 'No problem',
@@ -30,7 +53,7 @@ test('Repeated acct', (done) => {
   const email = 'repeated@example.com';
 
   return users.createUser({ email })
-    .then(users.createUser({ email }))
+    .then(() => users.createUser({ email }))
     .catch(() => done());
 });
 

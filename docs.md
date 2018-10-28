@@ -3,8 +3,21 @@
 ## User
 Each user is tied to a specific email address. The login flow of the user is split into 2 stage and utilizes the email address to verify the code for logging in.
 
-- createUser
-- changeName
+### Exposed funcs
+- `getUser(email)`: (utility) gets user object
+- `changeName({email, name})`: (authenticated) update user's name
+- `genAcct(email)`: (unauthenticated) creates holding acct for email, sends code out
+- `chkAcct({email, code, name})`: (unathenticated) if code matches, create user
+
+### Endpoints
+- `GET genAcct?email=`: `{code}`
+- `GET chkAcct?email=&code=&name`: `{}`
+- `POST changeName?email=&name=`: `{}`
+
+### Signing up
+There will be a temporary holding database which will stores the email and the 6 character code. When `/genAcct` is called, the code is created and sent to the user via mailgun. On the frontend, the user is redirected to a page where they are required to insert their desired names, and the code mailed to them.
+
+The frontend will redirect them to the api endpoint `/chkAcct` with the corresponding code, email and name. The endpoint not only creates the user account in the database, it also returns a token, just like in the login, which is then used to authenticate subsequent requests.
 
 ### Logging in
 The login system for the user provides the user with a 6 character login code through their email to verify identity. In failing to authenticate, the code will be removed and a new code will have to be generated.
