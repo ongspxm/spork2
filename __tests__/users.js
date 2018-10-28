@@ -9,6 +9,15 @@ const DBACCT = 'tmpAcct';
 const dbname = () => Math.random().toString().substring(2, 9);
 process.env.DEBUG = true;
 
+function newUser(email) {
+  return users.genAcct(email)
+    .then(() => dbase.select(DBACCT, 'email=?', [email]))
+    .then((res) => res[0])
+    .then((usr) => users.createUser({
+      email, code: usr.code
+    }));
+}
+
 beforeEach((done) => {
   process.env.DATABASE = `.data/${dbname()}.db`;
   fs.readFile('schema.sql', 'utf8',
@@ -41,37 +50,64 @@ test('genAcct works', (done) => {
 test('genAcct non-email', done => users.genAcct('asdfasdf')
   .catch(() => done()));
 
-test('Creating new user works', done => users.createUser({
-  email: 'createNewUser@example.com',
-  name: 'No problem',
-})
-  .then(() => dbase.select(DBNAME))
-  .then(res => expect(res.length).toBe(1))
-  .then(done));
+test('createAcct works', (done) => {
+  const email = 'test@example.com';
 
-test('Repeated acct', (done) => {
+  newUser(email)
+    .then(() => dbase.select(DBNAME))
+    .then(res => expect(res.length).toBe(1))
+    .then(() => dbase.select(DBACCT))
+    .then(res => expect(res.length).toBe(0))
+    .then(done);
+});
+
+test('createAcct wrong code', (done) => {
+  const email = 'test@example.com';
+
+  users.genAcct(email)
+    .then(() => users.createUser({ email, code: '123456' }))
+    .catch(() => done());
+});
+
+test('createAcct no holding acct', (done) => {
+  const email = 'test@example.com';
+
+  users.createUser({ email, code: '123456' })
+    .catch(() => done());
+});
+
+test('createAcct no code given', (done) => {
+  const email = 'test@example.com';
+
+  users.createUser({ email })
+    .catch(() => done());
+});
+
+test('createAcct repeated acct', (done) => {
   const email = 'repeated@example.com';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => users.createUser({ email }))
     .catch(() => done());
 });
 
-test('Wrong email', done => users.createUser({
+test('createAcct wrong email', done => users.createUser({
   email: 'wrongDomain@c',
   name: 'Wrong email',
 })
   .catch(() => done()));
 
-test('Changing user name works', (done) => {
+test('changeName', (done) => {
   const email = 'ChangeUserName@example.com';
   const firstName = 'Name1';
   const secondName = 'Name2';
 
-  return users.createUser({
-    email,
-    name: firstName,
-  })
+  users.genAcct(email)
+    .then(() => dbase.select(DBACCT))
+    .then((res) => res[0])
+    .then((usr) => users.createUser({
+      email, code: usr.code, name: firstName
+    }))
     .then(() => dbase.select('users'))
     .then(res => expect(res[0].name).toBe(firstName))
     .then(() => users.changeName({
@@ -86,7 +122,7 @@ test('Changing user name works', (done) => {
     .then(done);
 });
 
-test('Change name on non-exist', done => users.changeName({
+test('changeName on non-existing acct', done => users.changeName({
   email: 'nobody@example.com',
   name: 'asdf',
 })

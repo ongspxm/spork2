@@ -31,19 +31,23 @@ function getUser(email) {
 }
 
 function createUser(usr) {
-  // ({email, name}) => usr
+  // ({email, code, name}) => usr
   if (!isEmail(usr.email)) {
     return err('Malformed Email');
   }
 
-  return getUser(usr.email)
-    .then((res) => {
-      if (res) { return err('User Exist'); }
-      return Promise.resolve();
-    })
+  if (!usr.code) {
+    return err('Missing code to create acct');
+  }
+
+  return dbase.select(DB_ACCTS, 'email=? and code=?', [usr.email, usr.code])
+    .then((res) => res.length == 1
+      ? Promise.resolve()
+      : err('Unable to find holding acct'))
     .then(() => dbase.insert(
       DB_USERS, { email: usr.email, name: usr.name },
-    ));
+    ))
+    .then(() => dbase.delete(DB_ACCTS, 'email=?', [usr.email]));
 }
 
 function changeName(usr) {

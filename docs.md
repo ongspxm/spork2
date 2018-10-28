@@ -10,8 +10,8 @@ Each user is tied to a specific email address. The login flow of the user is spl
 - `chkAcct({email, code, name})`: (unathenticated) if code matches, create user
 
 ### Endpoints
-- `GET genAcct?email=`: `{code}`
-- `GET chkAcct?email=&code=&name`: `{}`
+- `POST genAcct?email=`: `{code}`
+- `POST chkAcct?email=&code=&name`: `{}`
 - `POST changeName?email=&name=`: `{}`
 
 ### Signing up

@@ -29,6 +29,7 @@
     "rm-local-modules": "0.0.2"
   },
   "dependencies": {
+    "body-parser": "^1.18.3",
     "dbase": "file:lib/dbase",
     "email-validator": "^2.0.4",
     "express": "^4.16.4",

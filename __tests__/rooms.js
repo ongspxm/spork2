@@ -1,14 +1,24 @@
 const fs = require('fs');
 const dbase = require('dbase');
 
-const users = require('../users.js');
 const rooms = require('../rooms.js');
+const users = require('../users.js');
 
 const DBNAME = 'rms';
 const DBIMGS = 'rmimgs';
+const DBACCT = 'tmpAcct';
 
 const dbname = () => Math.random().toString().substring(2, 9);
 process.env.DEBUG = true;
+
+function newUser(email) {
+  return users.genAcct(email)
+    .then(() => dbase.select(DBACCT, 'email=?', [email]))
+    .then((res) => res[0])
+    .then((usr) => users.createUser({
+      email, code: usr.code
+    }));
+}
 
 beforeEach((done) => {
   process.env.DATABASE = `.data/${dbname()}.db`;
@@ -23,7 +33,7 @@ afterEach((done) => {
 test('Create new room works', (done) => {
   const email = 'test@example.com';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.newRoom({ email }))
     .then(() => dbase.select(DBNAME))
     .then(res => expect(res.length).toBe(1))
@@ -45,7 +55,7 @@ test('Update room works', (done) => {
   const title1 = 'title 1';
   const title2 = 'title 2';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.newRoom({ email, title: title1 }))
     .then(() => rooms.updateRoom({
       email, title: title2, rid: 1,
@@ -58,7 +68,7 @@ test('Update room works', (done) => {
 test('Update room cannot find room', (done) => {
   const email = 'test@example.com';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.updateRoom({
       email, rid: 100,
     }))
@@ -69,24 +79,22 @@ test('Add new img works', (done) => {
   const email = 'test@example.com';
   const data = 'https://picsum.photos/200/300';
 
-  let gImg;
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.newRoom({ email }))
     .then(() => rooms.addImg({ email, rid: 1, data }))
-    .then((img) => { gImg = img; })
-    .then(() => dbase.select(DBIMGS))
-    .then((res) => {
-      expect(res.length).toBe(1);
-      expect(res[0]).toEqual(gImg);
-      done();
-    });
+    .then(img => dbase.select(DBIMGS)
+      .then((res) => {
+        expect(res.length).toBe(1);
+        expect(res[0]).toEqual(img);
+      }))
+    .then(done);
 });
 
 test('Add new img cannot find room', (done) => {
   const email = 'test@example.com';
   const data = 'https://picsum.photos/200/300';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.addImg({ email, rid: 1, data }))
     .catch(() => done());
 });
@@ -103,7 +111,7 @@ test('Del img works', (done) => {
   const email = 'test@example.com';
   const data = 'https://picsum.photos/200/300';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.newRoom({ email }))
     .then(() => rooms.addImg({ email, rid: 1, data }))
     .then(img => rooms.delImg({ email, rid: 1, imgid: img.id }))
@@ -119,7 +127,7 @@ test('Del img, cannot find image', (done) => {
   const email = 'test@example.com';
   const data = 'https://picsum.photos/200/300';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.newRoom({ email }))
     .then(() => rooms.delImg({ email, rid: 1, imgur: data }))
     .then(() => done());
@@ -129,7 +137,7 @@ test('Del img, cannot find room', (done) => {
   const email = 'test@example.com';
   const data = 'https://picsum.photos/200/300';
 
-  return users.createUser({ email })
+  newUser(email)
     .then(() => rooms.delImg({ email, rid: 1, imgur: data }))
     .catch(() => done());
 });
